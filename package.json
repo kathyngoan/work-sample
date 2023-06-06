@@ -1,0 +1,27 @@
+{
+  "name": "work-sample",
+  "version": "0.0.0",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview --port 4173"
+  },
+  "dependencies": {
+    "@popperjs/core": "^2.11.6",
+    "aos": "^2.3.4",
+    "axios": "^0.27.2",
+    "swiper": "^8.2.6",
+    "vue": "^3.2.37",
+    "vue-aos": "^3.1.0",
+    "vue-awesome-swiper": "^5.0.1",
+    "vue-axios": "^3.4.1",
+    "vue-router": "^4.0.16"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^2.3.3",
+    "node-sass": "^7.0.1",
+    "sass": "^1.53.0",
+    "sass-loader": "^13.0.2",
+    "vite": "^2.9.12"
+  }
+}
