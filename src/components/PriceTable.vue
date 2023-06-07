@@ -55,9 +55,9 @@
               <tr v-for="(item, index) in vm.prices">
                 <td></td>
                 <td v-for="(itemChild) in item"
-                   :class="{ selected : isSelected}"
+                   :class="{ selected : itemChild.isSelected}"
                    @mouseenter="hoverCell"
-                   @click="selectedCell(itemChild.price)">
+                   @click="selectedCell(itemChild.id)">
             
                   <div class="price" v-text="formatNumberWithCommas1(itemChild.price * itemChild.quantity)"></div>
                   <!-- <div class="quantity">{{ itemChild.quantity }}</div> -->
@@ -67,7 +67,7 @@
             </tbody>
           </table>
           <div class="see-more">
-            <button class="button button-see-more" @click="seeAllData">See more</button>
+            <button :hidden="isHideSeeMoreButton" class="button button-see-more" @click="seeAllData">See more</button>
           </div>
         </div>
 
@@ -75,7 +75,7 @@
     </div>
     <div class="area two">
       <div class="order-price">
-        <span>Order price:</span><span>&#165;</span><span>{{ valueClicked }}</span>
+        <span>Order price:</span><span>&#165;</span><div v-text="formatNumberWithCommas1(orderPrice)"></div>
       </div>
       <button class="button button-cart">Cart</button>
     </div>
@@ -87,23 +87,28 @@ import { inject, ref, watch, onBeforeMount, onMounted, computed } from "vue";
 import axios from "axios";
 
 const isHover = ref(false);
-const isSelected = ref(false);
+const isHideSeeMoreButton = ref(false);
 
 const vm = ref([] as any);
-const vmTemp = ref([] as any);
 let paperSize = "A4";
 
 
 const price = ref('');
-const orderPrice = ref('');
+const orderPrice = ref(0);
 let valueClicked = '';
 
 const hoverCell = () => {
   isHover.value = !isHover.value
 }
-const selectedCell = (inputValueSelected : any) => {
-  isSelected.value = !isSelected.value;
-  valueClicked = inputValueSelected;
+const selectedCell = (inputValueId : any) => {
+  vm.value?.prices?.forEach((element:any) => {
+    element.forEach((elementChild:any) => {
+    if(elementChild.id == inputValueId) {
+        elementChild.isSelected = !elementChild.isSelected;
+        orderPrice.value = elementChild.isSelected ? elementChild.price +  orderPrice.value : orderPrice.value - elementChild.price;
+      }
+    });
+  });
 }
 
 const onChangePaperSize = () => {
@@ -111,6 +116,7 @@ const onChangePaperSize = () => {
 };
 
 const seeAllData = () => {
+  isHideSeeMoreButton.value = true;
   getList();
 };
 
@@ -124,10 +130,18 @@ const getList = async () => {
   let api = "https://us-central1-fe-ws-test.cloudfunctions.net/prices?paper_size=" + paperSize;
   //"https://us-central1-fe-ws-test.cloudfunctions.net/prices?paper_size=A4"
 
-
-
   const response = await axios.get(api);
-  vm.value =  response.data;
+  
+  //Add isSelected property
+  let index = 0;
+  response.data?.prices.forEach((element: any) => {
+    element.forEach((elementChild:any) => {
+      elementChild.isSelected = false;
+      elementChild.id = index;
+      index++;
+    });
+  });
+  vm.value = response.data;
 };
 
 //HoanNguyen
