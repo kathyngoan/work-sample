@@ -29,53 +29,45 @@
             <thead>
               <tr>
                 <th></th>
-                <th>Day 1</th>
-                <th>Day 2</th>
-                <th>Day 3</th>
-                <th>Day 4</th>
-                <th>Day 5</th>
+                <th>
+                  <p>Day 1</p>
+                  <p>Price x Quantity</p>
+                </th>
+                <th>
+                  <p>Day 2</p>
+                  <p>Price x Quantity</p>
+                </th>
+                <th>
+                  <p>Day 3</p>
+                  <p>Price x Quantity</p>
+                </th>
+                <th>
+                  <p>Day 4</p>
+                  <p>Price x Quantity</p>
+                </th>
+                <th>
+                  <p>Day 5</p>
+                  <p>Price x Quantity</p>
+                </th>
               </tr>
             </thead>
             <tbody>
               <tr v-for="(item, index) in vm.prices">
                 <td></td>
-                <td>
-                  <div class="price">{{ item[0].price }}</div>
-                  <div class="quantity">{{ item[0].quantity }}</div>
-                  <div class="business_day">{{ item[0].business_day }}</div>
-                 
-                </td>
-                <!-- <td 
-                    :class="{ selected : isSelected}"
+                <td v-for="(itemChild) in item"
+                   :class="{ selected : isSelected}"
                    @mouseenter="hoverCell"
-                   @click="selectedCell()">
-                  
-                </td> -->
-                <td>
-                  <div class="price">{{ item[1].price }}</div>
-                  <div class="quantity">{{ item[1].quantity }}</div>
-                  <div class="business_day">{{ item[1].business_day }}</div>
-                </td>
-                <td>
-                  <div class="price">{{ item[2].price }}</div>
-                  <div class="quantity">{{ item[2].quantity }}</div>
-                  <div class="business_day">{{ item[2].business_day }}</div>
-                </td>
-                <td>
-                  <div class="price">{{ item[3].price }}</div>
-                  <div class="quantity">{{ item[3].quantity }}</div>
-                  <div class="business_day">{{ item[3].business_day }}</div>
-                </td>
-                <td>
-                  <div class="price">{{ item[4].price }}</div>
-                  <div class="quantity">{{ item[4].quantity }}</div>
-                  <div class="business_day">{{ item[4].business_day }}</div>
+                   @click="selectedCell(itemChild.price)">
+            
+                  <div class="price">{{ itemChild.price }} x {{ itemChild.quantity }}</div>
+                  <!-- <div class="quantity">{{ itemChild.quantity }}</div> -->
+                  <!-- <div class="business_day">{{ itemChild.business_day }}</div> -->
                 </td>
               </tr>
             </tbody>
           </table>
           <div class="see-more">
-            <button class="button button-see-more">See more</button>
+            <button class="button button-see-more" @click="seeAllData">See more</button>
           </div>
         </div>
 
@@ -83,7 +75,7 @@
     </div>
     <div class="area two">
       <div class="order-price">
-        <span>Order price:</span><span>&#165;</span><span>9999</span>
+        <span>Order price:</span><span>&#165;</span><span>{{ valueClicked }}</span>
       </div>
       <button class="button button-cart">Cart</button>
     </div>
@@ -91,55 +83,54 @@
 </template>
 
 <script setup lang="ts">
-import { inject, ref, watch, onBeforeMount, onMounted } from "vue";
+import { inject, ref, watch, onBeforeMount, onMounted, computed } from "vue";
 import axios from "axios";
 
 const isHover = ref(false);
 const isSelected = ref(false);
 
 const vm = ref([] as any);
+const vmTemp = ref([] as any);
 let paperSize = "A4";
 
 
 const price = ref('');
 const orderPrice = ref('');
+let valueClicked = '';
 
 const hoverCell = () => {
   isHover.value = !isHover.value
 }
-const selectedCell = () => {
-  isSelected.value = !isSelected.value
+const selectedCell = (inputValueSelected : any) => {
+  isSelected.value = !isSelected.value;
+  valueClicked = inputValueSelected;
 }
 
 const onChangePaperSize = () => {
+  get5Items();
+};
+
+const seeAllData = () => {
   getList();
 };
 
-const getList = () => {
-  //Function to Show data api by axios api
+const get5Items = async () => {
+  await getList();
+  vm.value.prices = vm.value.prices.slice(0,5);
+};
+
+
+const getList = async () => {
   let api = "https://us-central1-fe-ws-test.cloudfunctions.net/prices?paper_size=" + paperSize;
-    //"https://us-central1-fe-ws-test.cloudfunctions.net/prices?paper_size=" + paperSize;
-    
-  // axios.get(api).then((response) => {
-  //     vm.value = response.data;
-  //     console.log("Data API is:", vm.value);
-  // })
-  // or
-  axios.get(api).then((response) => {
-    vm.value = response.data;
-    console.log(vm.value);
-    console.log("5 rows", vm.value.prices.slice(0, 5).length);
-    console.log("see more", vm.value.prices.length);
-    console.log("Price A4", vm.value.paper_size);
+  //"https://us-central1-fe-ws-test.cloudfunctions.net/prices?paper_size=A4"
 
 
-    const getPrice = (prices:any) => {
-      return price.value = prices.price
-    }
-  });
+
+  const response = await axios.get(api);
+  vm.value =  response.data;
 };
 
 onMounted(() => {
-  getList();
+  get5Items();
 });
 </script>
