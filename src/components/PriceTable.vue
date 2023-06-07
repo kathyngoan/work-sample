@@ -59,7 +59,7 @@
                    @mouseenter="hoverCell"
                    @click="selectedCell(itemChild.price)">
             
-                  <div class="price">{{ itemChild.price }} x {{ itemChild.quantity }}</div>
+                  <div class="price" v-text="formatNumberWithCommas1(itemChild.price * itemChild.quantity)"></div>
                   <!-- <div class="quantity">{{ itemChild.quantity }}</div> -->
                   <!-- <div class="business_day">{{ itemChild.business_day }}</div> -->
                 </td>
@@ -129,6 +129,45 @@ const getList = async () => {
   const response = await axios.get(api);
   vm.value =  response.data;
 };
+
+//HoanNguyen
+const formatNumberWithCommas1 = (number:any) => {
+  // Convert the number to a string
+  let numberString = String(number);
+
+  // Add commas to the number
+  const regex = /\B(?=(\d{3})+(?!\d))/g;
+  numberString = numberString.replace(regex, ",");
+
+  return numberString;
+}
+
+const formatNumberWithCommas2 = (number:any) => {
+  // Convert the number to a string
+  let numberString = String(number);
+
+  // Split the number into integer and decimal parts (if any)
+  const parts = numberString.split(".");
+  let integerPart = parts[0];
+  const decimalPart = parts[1] || "";
+
+  // Create an array to store the formatted digits
+  const formattedDigits = [];
+
+  // Iterate over the integer part from right to left
+  for (let i = integerPart.length - 1, count = 0; i >= 0; i--, count++) {
+    // Add a comma after every third digit
+    if (count > 0 && count % 3 === 0) {
+      formattedDigits.unshift(",");
+    }
+    formattedDigits.unshift(integerPart[i]);
+  }
+
+  // Combine the formatted digits and decimal part (if any)
+  const formattedNumber = formattedDigits.join("") + (decimalPart ? "." + decimalPart : "");
+
+  return formattedNumber;
+}
 
 onMounted(() => {
   get5Items();
