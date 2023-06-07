@@ -43,16 +43,34 @@
                   <div class="price">{{ item[0].price }}</div>
                   <div class="quantity">{{ item[0].quantity }}</div>
                   <div class="business_day">{{ item[0].business_day }}</div>
+                 
                 </td>
-                <td 
+                <!-- <td 
                     :class="{ selected : isSelected}"
                    @mouseenter="hoverCell"
                    @click="selectedCell()">
                   
+                </td> -->
+                <td>
+                  <div class="price">{{ item[1].price }}</div>
+                  <div class="quantity">{{ item[1].quantity }}</div>
+                  <div class="business_day">{{ item[1].business_day }}</div>
                 </td>
-                <td>&nbsp;</td>
-                <td>&nbsp;</td>
-                <td>&nbsp;</td>
+                <td>
+                  <div class="price">{{ item[2].price }}</div>
+                  <div class="quantity">{{ item[2].quantity }}</div>
+                  <div class="business_day">{{ item[2].business_day }}</div>
+                </td>
+                <td>
+                  <div class="price">{{ item[3].price }}</div>
+                  <div class="quantity">{{ item[3].quantity }}</div>
+                  <div class="business_day">{{ item[3].business_day }}</div>
+                </td>
+                <td>
+                  <div class="price">{{ item[4].price }}</div>
+                  <div class="quantity">{{ item[4].quantity }}</div>
+                  <div class="business_day">{{ item[4].business_day }}</div>
+                </td>
               </tr>
             </tbody>
           </table>
