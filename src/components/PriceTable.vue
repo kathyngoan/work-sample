@@ -37,11 +37,12 @@
               </tr>
             </thead>
             <tbody>
-              <tr v-for="item in vm.prices">
+              <tr v-for="(item, index) in vm.prices">
                 <td></td>
                 <td>
-                  <div class="price">{{ item.price }}</div>
-                  <div class="quanlity">{{ item.quanlity }}</div>
+                  <div class="price">{{ item[0].price }}</div>
+                  <div class="quantity">{{ item[0].quantity }}</div>
+                  <div class="business_day">{{ item[0].business_day }}</div>
                 </td>
                 <td 
                     :class="{ selected : isSelected}"
