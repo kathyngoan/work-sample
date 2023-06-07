@@ -59,8 +59,8 @@
                    @mouseenter="hoverCell"
                    @click="selectedCell(itemChild.id)">
             
-                  <div class="price" v-text="formatNumberWithCommas1(itemChild.price * itemChild.quantity)"></div>
-                  <!-- <div class="quantity">{{ itemChild.quantity }}</div> -->
+                  <div class="price"></div>
+                  <div class="quantity">{{ itemChild.price }} x {{ itemChild.quantity }}</div>
                   <!-- <div class="business_day">{{ itemChild.business_day }}</div> -->
                 </td>
               </tr>
@@ -75,7 +75,7 @@
     </div>
     <div class="area two">
       <div class="order-price">
-        <span>Order price:</span><span>&#165;</span><div v-text="formatNumberWithCommas1(orderPrice)"></div>
+        <span>Order price:</span><span>&#165;</span><div v-text="formatNumberWithCommas(orderPrice)"></div>
       </div>
       <button class="button button-cart">Cart</button>
     </div>
@@ -83,19 +83,17 @@
 </template>
 
 <script setup lang="ts">
-import { inject, ref, watch, onBeforeMount, onMounted, computed } from "vue";
+import { ref, onMounted } from "vue";
 import axios from "axios";
 
 const isHover = ref(false);
+const isSelected = ref(false);
 const isHideSeeMoreButton = ref(false);
 
 const vm = ref([] as any);
 let paperSize = "A4";
 
-
-const price = ref('');
 const orderPrice = ref(0);
-let valueClicked = '';
 
 const hoverCell = () => {
   isHover.value = !isHover.value
@@ -104,8 +102,8 @@ const selectedCell = (inputValueId : any) => {
   vm.value?.prices?.forEach((element:any) => {
     element.forEach((elementChild:any) => {
     if(elementChild.id == inputValueId) {
-        elementChild.isSelected = !elementChild.isSelected;
-        orderPrice.value = elementChild.isSelected ? elementChild.price +  orderPrice.value : orderPrice.value - elementChild.price;
+       isSelected.value = !isSelected.value;
+        orderPrice.value = elementChild.price*elementChild.quantity
       }
     });
   });
@@ -136,7 +134,6 @@ const getList = async () => {
   let index = 0;
   response.data?.prices.forEach((element: any) => {
     element.forEach((elementChild:any) => {
-      elementChild.isSelected = false;
       elementChild.id = index;
       index++;
     });
@@ -144,8 +141,8 @@ const getList = async () => {
   vm.value = response.data;
 };
 
-//HoanNguyen
-const formatNumberWithCommas1 = (number:any) => {
+
+const formatNumberWithCommas = (number:any) => {
   // Convert the number to a string
   let numberString = String(number);
 
@@ -156,32 +153,6 @@ const formatNumberWithCommas1 = (number:any) => {
   return numberString;
 }
 
-const formatNumberWithCommas2 = (number:any) => {
-  // Convert the number to a string
-  let numberString = String(number);
-
-  // Split the number into integer and decimal parts (if any)
-  const parts = numberString.split(".");
-  let integerPart = parts[0];
-  const decimalPart = parts[1] || "";
-
-  // Create an array to store the formatted digits
-  const formattedDigits = [];
-
-  // Iterate over the integer part from right to left
-  for (let i = integerPart.length - 1, count = 0; i >= 0; i--, count++) {
-    // Add a comma after every third digit
-    if (count > 0 && count % 3 === 0) {
-      formattedDigits.unshift(",");
-    }
-    formattedDigits.unshift(integerPart[i]);
-  }
-
-  // Combine the formatted digits and decimal part (if any)
-  const formattedNumber = formattedDigits.join("") + (decimalPart ? "." + decimalPart : "");
-
-  return formattedNumber;
-}
 
 onMounted(() => {
   get5Items();
