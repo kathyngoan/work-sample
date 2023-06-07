@@ -1,0 +1,28 @@
+$gray: #ddd;
+
+body {
+    margin: auto 2rem;
+    overflow-x: hidden;
+}
+main {
+   .wrapper {
+        width: 100%;;
+        margin: auto;
+        min-height: 100vh;display: flex;
+        flex-direction: column;
+        justify-content: center;
+        max-width: 11400px;
+        @media (min-width: 1440px) {
+            max-width: 1380px;
+        }
+    }
+}
+.price-table-page {
+
+    display: grid;
+    gap: 2rem;
+    grid-template-columns: 1fr 2fr;
+}
+.sidebar {
+    background: $gray;
+}
