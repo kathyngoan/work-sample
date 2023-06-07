@@ -2,6 +2,8 @@ $gray: #ddd;
 $gray-dark: #313030;
 $white: #fff;
 
+$main-font: "arial";
+
 @mixin flex-end-mixin  {
     display: flex;
     justify-content: end;
@@ -9,6 +11,7 @@ $white: #fff;
 body {
     margin: auto 2rem;
     overflow-x: hidden;
+    font-family: $main-font;
 }
 main {
    .wrapper {
@@ -107,22 +110,29 @@ main {
 
                         &.selected {
                             background: $gray-dark;
+                            color: $white;
                         }
                         &.hover {
                             background: $gray;
                         }
                         &:hover {
                             background: $gray-dark;
+                            color: $white;
                         }
 
                     }
                 }
-                .see-more, .see-less {
+                .see-more {
                     @include flex-end-mixin;
                     margin-top: 1rem;
                     position: relative;
                     z-index: 5;
+                    .button {
+                        width: 100px; height: 32px;
+                        padding: unset;
+                    }
                 }
+                
             }
         }
         &.two {
@@ -133,6 +143,9 @@ main {
             align-items: center;
             .order-price {
                 display: flex;
+                .unit {
+                    margin: 0 .25rem 0 .5rem;
+                }
             }
         }
     }

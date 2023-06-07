@@ -8,7 +8,6 @@
           <select
             id="papersize"
             v-model="paperSize"
-            @change="onChangePaperSize()"
           >
             <option value="A4">A4</option>
             <option value="A5">A5</option>
@@ -31,23 +30,23 @@
                 <th></th>
                 <th>
                   <p>Day 1</p>
-                  <p>Price x Quantity</p>
+                  <p>Price | Quantity</p>
                 </th>
                 <th>
                   <p>Day 2</p>
-                  <p>Price x Quantity</p>
+                  <p>Price | Quantity</p>
                 </th>
                 <th>
                   <p>Day 3</p>
-                  <p>Price x Quantity</p>
+                  <p>Price | Quantity</p>
                 </th>
                 <th>
                   <p>Day 4</p>
-                  <p>Price x Quantity</p>
+                  <p>Price | Quantity</p>
                 </th>
                 <th>
                   <p>Day 5</p>
-                  <p>Price x Quantity</p>
+                  <p>Price | Quantity</p>
                 </th>
               </tr>
             </thead>
@@ -60,7 +59,7 @@
                    @click="selectedCell(itemChild.id)">
             
                   <div class="price"></div>
-                  <div class="quantity">{{ itemChild.price }} x {{ itemChild.quantity }}</div>
+                  <div class="quantity">{{ itemChild.price }} I {{ itemChild.quantity }}</div>
                   <!-- <div class="business_day">{{ itemChild.business_day }}</div> -->
                 </td>
               </tr>
@@ -76,7 +75,7 @@
     </div>
     <div class="area two">
       <div class="order-price">
-        <span>Order price:</span><span>&#165;</span><div v-text="formatNumberWithCommas1(orderPrice)"></div>
+        <span>Order price:</span><span class="unit">&#165;</span><div v-text="formatNumberWithCommas(orderPrice)"></div>
       </div>
       <button class="button button-cart">Cart</button>
     </div>
@@ -84,7 +83,7 @@
 </template>
 
 <script setup lang="ts">
-import { inject, ref, watch, onBeforeMount, onMounted, computed } from "vue";
+import { ref, onMounted } from "vue";
 import axios from "axios";
 
 const isHover = ref(false);
@@ -118,7 +117,8 @@ const selectedCell = (inputValueId : any) => {
     element.forEach((itemChild:any, col:any) => {
     if(itemChild.id == inputValueId) {
       itemChild.isSelected = !itemChild.isSelected;
-        orderPrice.value = itemChild.price * itemChild.quantity;
+        //orderPrice.value = itemChild.price * itemChild.quantity;
+        orderPrice.value = itemChild.price;
         console.log(row, col);
         rowX = row;
         colY = col;
@@ -131,9 +131,6 @@ const selectedCell = (inputValueId : any) => {
   highlight(rowX, colY);
 }
 
-const onChangePaperSize = () => {
-  //set value ở đây cho paperSize ở đây, khi nào bấm apply mới gọi get5Items
-};
 
 const seeAllData = () => {
   isHideSeeMoreButton.value = true;
@@ -155,50 +152,40 @@ const getList = async () => {
   
   //Add isSelected property
   let index = 0;
-  response.data?.prices.forEach((element: any) => {
-    element.forEach((elementChild:any) => {
-      elementChild.isSelected = false;
-      elementChild.id = index;
+  response.data?.prices.forEach((price: any) => {
+    price.forEach((price:any) => {
+      price.isSelected = false;
+      price.id = index;
       index++;
     });
   });
   vm.value = response.data;
 };
 
-//HoanNguyen
-const formatNumberWithCommas1 = (number:any) => {
-  // Convert the number to a string
+const formatNumberWithCommas = (number:any) => {
   let numberString = String(number);
-
-  // Add commas to the number
   const regex = /\B(?=(\d{3})+(?!\d))/g;
   numberString = numberString.replace(regex, ",");
 
   return numberString;
 }
 
-const formatNumberWithCommas2 = (number:any) => {
-  // Convert the number to a string
+const formatNumberWithCommasOpt = (number:any) => {
   let numberString = String(number);
 
-  // Split the number into integer and decimal parts (if any)
   const parts = numberString.split(".");
   let integerPart = parts[0];
   const decimalPart = parts[1] || "";
 
-  // Create an array to store the formatted digits
   const formattedDigits = [];
 
-  // Iterate over the integer part from right to left
   for (let i = integerPart.length - 1, count = 0; i >= 0; i--, count++) {
-    // Add a comma after every third digit
     if (count > 0 && count % 3 === 0) {
       formattedDigits.unshift(",");
     }
     formattedDigits.unshift(integerPart[i]);
   }
 
-  // Combine the formatted digits and decimal part (if any)
   const formattedNumber = formattedDigits.join("") + (decimalPart ? "." + decimalPart : "");
 
   return formattedNumber;
@@ -207,7 +194,6 @@ const formatNumberWithCommas2 = (number:any) => {
 const highlight = (row :any, col:any) => {
   for (let i = 0; i < vm.value?.prices?.length; i++) {
     for (let j = 0; j < vm.value?.prices[i].length; j++) {
-      //console.log('row col', row, col);
       if(i==row && j==col) {
         vm.value.prices[i][j].isHover = false;
       }
@@ -220,7 +206,7 @@ const highlight = (row :any, col:any) => {
     }
   }
 
-  return null; // Return null if the value is not found
+  return null; 
 }
 
 onMounted(() => {
