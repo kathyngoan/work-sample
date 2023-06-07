@@ -101,18 +101,27 @@ const hoverCell = () => {
   isHover.value = !isHover.value
 }
 const selectedCell = (inputValueId : any) => {
-  vm.value?.prices?.forEach((element:any) => {
-    element.forEach((elementChild:any) => {
+  let rowX, colY;
+  vm.value?.prices?.forEach((element:any, row:any) => {
+    element.forEach((elementChild:any, col:any) => {
     if(elementChild.id == inputValueId) {
         elementChild.isSelected = !elementChild.isSelected;
         orderPrice.value = elementChild.isSelected ? elementChild.price +  orderPrice.value : orderPrice.value - elementChild.price;
-      }
+        console.log(row, col);
+        rowX = row;
+        colY = col;
+    }
+    else {
+      elementChild.isSelected = false;
+    }
     });
   });
+  highlight(rowX, colY);
 }
 
 const onChangePaperSize = () => {
-  get5Items();
+  //set value ở đây cho paperSize ở đây, khi nào bấm apply mới gọi get5Items
+  //get5Items();
 };
 
 const seeAllData = () => {
@@ -181,6 +190,19 @@ const formatNumberWithCommas2 = (number:any) => {
   const formattedNumber = formattedDigits.join("") + (decimalPart ? "." + decimalPart : "");
 
   return formattedNumber;
+}
+
+const highlight = (row :any, col:any) => {
+  for (let i = 0; i < vm.value?.prices?.length; i++) {
+    for (let j = 0; j < vm.value?.prices[i].length; j++) {
+      console.log('higjk', row, col);
+      if(i==row || j==col) {
+        vm.value.prices[i][j].isSelected = true;
+      }
+    }
+  }
+
+  return null; // Return null if the value is not found
 }
 
 onMounted(() => {
