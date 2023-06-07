@@ -1,53 +1,72 @@
 <template>
   <div class="price-table-page">
-    <div class="sidebar">
-      <select id="papersize" v-model="paperSize" @change="onChangePaperSize()">
-        <option value="A4">A4</option>
-        <option value="A5">A5</option>
-        <option value="B4">B4</option>
-        <option value="B5">B5</option>
-      </select>
-    </div>
-    <div class="price-table-box">
-      <div class="col" v-for="item in vm" :key="item.id">
-        <div
-          class="card card-cover h-100 overflow-hidden text-white bg-dark rounded-5 shadow-lg"
-          style="
-            background-image: url('https://p4.wallpaperbetter.com/wallpaper/500/442/354/outrun-vaporwave-hd-wallpaper-thumb.jpg');
-          "
-        >
-          <div
-            class="d-flex flex-column h-100 p-5 pb-3 text-white text-shadow-1"
+    <div class="area one">
+      <div class="sidebar">
+        <h3>Select paper size</h3>
+        <div class="wrap-box">
+          <div class="select-box">
+          <select
+            id="papersize"
+            v-model="paperSize"
+            @change="onChangePaperSize()"
           >
-            <h2 class="pt-5 mt-5 mb-4 display-6 lh-1 fw-bold">
-              {{ item.title }}
-            </h2>
-            <ul class="d-flex list-unstyled mt-auto">
-              <li class="me-auto">
-                <img
-                  src="https://p4.wallpaperbetter.com/wallpaper/500/442/354/outrun-vaporwave-hd-wallpaper-thumb.jpg"
-                  alt="Bootstrap"
-                  width="32"
-                  height="32"
-                  class="rounded-circle border border-white"
-                />
-              </li>
-              <li class="d-flex align-items-center me-3">
-                <svg class="bi me-2" width="1em" height="1em">
-                  <use xlink:href="#geo-fill" />
-                </svg>
-                <small>Earth</small>
-              </li>
-              <li class="d-flex align-items-center">
-                <svg class="bi me-2" width="1em" height="1em">
-                  <use xlink:href="#calendar3" />
-                </svg>
-                <small>3d</small>
-              </li>
-            </ul>
-          </div>
+            <option value="A4">A4</option>
+            <option value="A5">A5</option>
+            <option value="B4">B4</option>
+            <option value="B5">B5</option>
+          </select>
+        </div>
+        <div class="apply">
+          <button class="button button-apply">Apply</button>
         </div>
       </div>
+
+      </div>
+      <div class="price-table-box">
+        <h3>Price table</h3>
+        <div class="table">
+          <table>
+            <thead>
+              <tr>
+                <th></th>
+                <th>Day 1</th>
+                <th>Day 2</th>
+                <th>Day 3</th>
+                <th>Day 4</th>
+                <th>Day 5</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="item in vm.prices">
+                <td></td>
+                <td>
+                  <div class="price">{{ item.price }}</div>
+                  <div class="quanlity">{{ item.quanlity }}</div>
+                </td>
+                <td 
+                    :class="{ selected : isSelected}"
+                   @mouseenter="hoverCell"
+                   @click="selectedCell()">
+                  
+                </td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="see-more">
+            <button class="button button-see-more">See more</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    <div class="area two">
+      <div class="order-price">
+        <span>Order price:</span><span>&#165;</span><span>9999</span>
+      </div>
+      <button class="button button-cart">Cart</button>
     </div>
   </div>
 </template>
@@ -56,8 +75,22 @@
 import { inject, ref, watch, onBeforeMount, onMounted } from "vue";
 import axios from "axios";
 
+const isHover = ref(false);
+const isSelected = ref(false);
+
 const vm = ref([] as any);
 let paperSize = "A4";
+
+
+const price = ref('');
+const orderPrice = ref('');
+
+const hoverCell = () => {
+  isHover.value = !isHover.value
+}
+const selectedCell = () => {
+  isSelected.value = !isSelected.value
+}
 
 const onChangePaperSize = () => {
   getList();
@@ -65,9 +98,9 @@ const onChangePaperSize = () => {
 
 const getList = () => {
   //Function to Show data api by axios api
-  let api =
-    "https://us-central1-fe-ws-test.cloudfunctions.net/prices?paper_size=" +
-    paperSize;
+  let api = "https://us-central1-fe-ws-test.cloudfunctions.net/prices?paper_size=" + paperSize;
+    //"https://us-central1-fe-ws-test.cloudfunctions.net/prices?paper_size=" + paperSize;
+    
   // axios.get(api).then((response) => {
   //     vm.value = response.data;
   //     console.log("Data API is:", vm.value);
@@ -78,6 +111,12 @@ const getList = () => {
     console.log(vm.value);
     console.log("5 rows", vm.value.prices.slice(0, 5).length);
     console.log("see more", vm.value.prices.length);
+    console.log("Price A4", vm.value.paper_size);
+
+
+    const getPrice = (prices:any) => {
+      return price.value = prices.price
+    }
   });
 };
 
