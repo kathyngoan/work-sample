@@ -111,6 +111,9 @@ main {
                         &.hover {
                             background: $gray;
                         }
+                        &:hover {
+                            background: $gray-dark;
+                        }
 
                     }
                 }
@@ -119,6 +122,13 @@ main {
                     margin-top: 1rem;
                     position: relative;
                     z-index: 5;
+                }
+                .see-less {
+                    @include flex-end-mixin;
+                    margin-top: 1rem;
+                    position: relative;
+                    z-index: 5;
+                    display: none;
                 }
             }
         }

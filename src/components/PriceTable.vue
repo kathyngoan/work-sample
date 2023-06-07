@@ -17,7 +17,7 @@
           </select>
         </div>
         <div class="apply">
-          <button class="button button-apply">Apply</button>
+          <button @click="applyClick" class="button button-apply">Apply</button>
         </div>
       </div>
 
@@ -55,12 +55,12 @@
               <tr v-for="(item, index) in vm.prices">
                 <td></td>
                 <td v-for="(itemChild) in item"
-                   :class="{ selected : itemChild.isSelected}"
+                   :class="{ selected : itemChild.isSelected, hover : itemChild.isHover}"
                    @mouseenter="hoverCell"
                    @click="selectedCell(itemChild.id)">
             
-                  <div class="price" v-text="formatNumberWithCommas1(itemChild.price * itemChild.quantity)"></div>
-                  <!-- <div class="quantity">{{ itemChild.quantity }}</div> -->
+                  <div class="price"></div>
+                  <div class="quantity">{{ itemChild.price }} x {{ itemChild.quantity }}</div>
                   <!-- <div class="business_day">{{ itemChild.business_day }}</div> -->
                 </td>
               </tr>
@@ -68,6 +68,7 @@
           </table>
           <div class="see-more">
             <button :hidden="isHideSeeMoreButton" class="button button-see-more" @click="seeAllData">See more</button>
+            <button :hidden="isHideSeeLessButton" class="button button-see-less" @click="showSeeLessButton">See less</button>
           </div>
         </div>
 
@@ -88,31 +89,42 @@ import axios from "axios";
 
 const isHover = ref(false);
 const isHideSeeMoreButton = ref(false);
+const isHideSeeLessButton = ref(true);
 
 const vm = ref([] as any);
-let paperSize = "A4";
+let paperSize = ref("A4");
 
-
-const price = ref('');
 const orderPrice = ref(0);
-let valueClicked = '';
+
 
 const hoverCell = () => {
   isHover.value = !isHover.value
 }
+
+const applyClick = () => {
+  get5Items();
+}
+
+const showSeeLessButton = () => {
+  get5Items();
+  isHideSeeMoreButton.value = false;
+  isHideSeeLessButton.value = true;
+}
+
+
 const selectedCell = (inputValueId : any) => {
   let rowX, colY;
   vm.value?.prices?.forEach((element:any, row:any) => {
-    element.forEach((elementChild:any, col:any) => {
-    if(elementChild.id == inputValueId) {
-        elementChild.isSelected = !elementChild.isSelected;
-        orderPrice.value = elementChild.isSelected ? elementChild.price +  orderPrice.value : orderPrice.value - elementChild.price;
+    element.forEach((itemChild:any, col:any) => {
+    if(itemChild.id == inputValueId) {
+      itemChild.isSelected = !itemChild.isSelected;
+        orderPrice.value = itemChild.price * itemChild.quantity;
         console.log(row, col);
         rowX = row;
         colY = col;
     }
     else {
-      elementChild.isSelected = false;
+      itemChild.isSelected = false;
     }
     });
   });
@@ -121,11 +133,11 @@ const selectedCell = (inputValueId : any) => {
 
 const onChangePaperSize = () => {
   //set value ở đây cho paperSize ở đây, khi nào bấm apply mới gọi get5Items
-  //get5Items();
 };
 
 const seeAllData = () => {
   isHideSeeMoreButton.value = true;
+  isHideSeeLessButton.value = false;
   getList();
 };
 
@@ -136,7 +148,7 @@ const get5Items = async () => {
 
 
 const getList = async () => {
-  let api = "https://us-central1-fe-ws-test.cloudfunctions.net/prices?paper_size=" + paperSize;
+  let api = "https://us-central1-fe-ws-test.cloudfunctions.net/prices?paper_size=" + paperSize.value; 
   //"https://us-central1-fe-ws-test.cloudfunctions.net/prices?paper_size=A4"
 
   const response = await axios.get(api);
@@ -195,9 +207,15 @@ const formatNumberWithCommas2 = (number:any) => {
 const highlight = (row :any, col:any) => {
   for (let i = 0; i < vm.value?.prices?.length; i++) {
     for (let j = 0; j < vm.value?.prices[i].length; j++) {
-      console.log('higjk', row, col);
-      if(i==row || j==col) {
-        vm.value.prices[i][j].isSelected = true;
+      //console.log('row col', row, col);
+      if(i==row && j==col) {
+        vm.value.prices[i][j].isHover = false;
+      }
+      else if(i==row || j==col) {
+        vm.value.prices[i][j].isHover = true;
+      }
+      else {
+        vm.value.prices[i][j].isHover = false;
       }
     }
   }
