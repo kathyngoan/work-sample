@@ -107,6 +107,7 @@ main {
                     td {
                         border:1px solid $gray;
                         text-align:center;
+                        cursor: pointer;
 
                         &.selected {
                             background: $gray-dark;
@@ -162,4 +163,7 @@ main {
         }
     }
 
+}
+.divider {
+    margin: 0 .35rem;
 }

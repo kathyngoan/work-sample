@@ -22,7 +22,7 @@
 
       </div>
       <div class="price-table-box">
-        <h3>Price table</h3>
+        <h3>Price table: <span>{{ titlePriceTable }}</span></h3>
         <div class="table">
           <table>
             <thead>
@@ -55,11 +55,13 @@
                 <td></td>
                 <td v-for="(itemChild) in item"
                    :class="{ selected : itemChild.isSelected, hover : itemChild.isHover}"
-                   @mouseenter="hoverCell"
+                   @mouseenter="selectedCell(itemChild.id)"
                    @click="selectedCell(itemChild.id)">
-            
-                  <div class="price"></div>
-                  <div class="quantity">{{ itemChild.price }} I {{ itemChild.quantity }}</div>
+                  <div class="info">
+                    <span v-text="formatNumberWithCommas(itemChild.price)"></span>
+                    <span class="divider">|</span>
+                    <span>{{ itemChild.quantity }}</span>
+                  </div>
                   <!-- <div class="business_day">{{ itemChild.business_day }}</div> -->
                 </td>
               </tr>
@@ -91,17 +93,19 @@ const isHideSeeMoreButton = ref(false);
 const isHideSeeLessButton = ref(true);
 
 const vm = ref([] as any);
-let paperSize = ref("A4");
+const paperSize = ref("A4");
 
 const orderPrice = ref(0);
 
+const titlePriceTable = ref('');
 
-const hoverCell = () => {
-  isHover.value = !isHover.value
-}
+// const hoverCell = () => {
+//   isHover.value = !isHover.value
+// }
 
 const applyClick = () => {
   get5Items();
+  titlePriceTable.value = paperSize.value;
 }
 
 const showSeeLessButton = () => {
@@ -119,7 +123,6 @@ const selectedCell = (inputValueId : any) => {
       itemChild.isSelected = !itemChild.isSelected;
         //orderPrice.value = itemChild.price * itemChild.quantity;
         orderPrice.value = itemChild.price;
-        console.log(row, col);
         rowX = row;
         colY = col;
     }
